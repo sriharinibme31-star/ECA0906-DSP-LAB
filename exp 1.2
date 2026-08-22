@@ -1,0 +1,61 @@
+clc;
+clear;
+close all;
+
+% EX NO: 1.2
+% Butterworth IIR High-Pass Filter
+% Design and Analysis of a Butterworth IIR High-Pass Filter
+
+Fs = 10000;      % Sampling frequency (Hz)
+Fp = 3000;       % Passband frequency (Hz)
+Fst = 2000;      % Stopband frequency (Hz)
+
+% Normalize frequencies
+Wp = Fp/(Fs/2);
+Ws = Fst/(Fs/2);
+
+% Calculate minimum filter order
+[N,Wn] = buttord(Wp,Ws,1,60);
+
+% Design Butterworth High-Pass Filter
+[b,a] = butter(N,Wn,'high');
+
+% Magnitude and Phase Response
+figure;
+freqz(b,a);
+title('Magnitude and Phase Response');
+
+% Impulse Response
+figure;
+[h,n] = impz(b,a,50);
+stem(n,h);
+grid on;
+title('Impulse Response');
+xlabel('Samples');
+ylabel('Amplitude');
+
+% Step Response
+figure;
+stepz(b,a);
+grid on;
+title('Step Response');
+xlabel('Samples');
+ylabel('Amplitude');
+
+% Group Delay
+figure;
+grpdelay(b,a);
+grid on;
+title('Group Delay');
+xlabel('Frequency');
+ylabel('Group Delay (samples)');
+
+% Pole-Zero Plot
+figure;
+zplane(b,a);
+grid on;
+title('Pole-Zero Plot');
+
+% Display Filter Parameters
+fprintf('Minimum Filter Order (N) = %d\n',N);
+fprintf('Cutoff Frequency (Wn) = %.4f\n',Wn);
