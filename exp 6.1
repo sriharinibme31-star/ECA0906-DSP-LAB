@@ -1,0 +1,73 @@
+clc;
+clear;
+close all;
+
+%% Signal Parameters
+fs = 1000;                 % Sampling frequency (Hz)
+f = 50;                    % Signal frequency (Hz)
+t = 0:1/fs:0.1;            % Time vector
+
+% Original signal
+x = sin(2*pi*f*t);
+
+%% Quantization Parameters
+L = [8 16 32];             % Quantization levels
+colors = {'r', 'g', 'm'};
+
+%% Quantized Signal Plots
+figure;
+
+% Original Signal
+subplot(4,1,1);
+plot(t, x, 'b', 'LineWidth', 1.5);
+title('Original Signal');
+xlabel('Time (s)');
+ylabel('Amplitude');
+grid on;
+
+% Quantization for different levels
+for i = 1:length(L)
+
+    % Quantization step
+    delta = 2 / (L(i) - 1);
+
+    % Quantized signal
+    xq{i} = round((x + 1) / delta) * delta - 1;
+
+    % Quantization error
+    e{i} = x - xq{i};
+
+    % Mean Square Error
+    mse(i) = mean(e{i}.^2);
+
+    % Plot quantized signal
+    subplot(4,1,i+1);
+    stairs(t, xq{i}, colors{i}, 'LineWidth', 1.2);
+    title(['Quantized Signal - ' num2str(L(i)) ' Levels']);
+    xlabel('Time (s)');
+    ylabel('Amplitude');
+    grid on;
+
+end
+
+%% Display MSE Values
+fprintf('\n--- Quantization MSE ---\n');
+fprintf('MSE for 8 Levels  = %.6f\n', mse(1));
+fprintf('MSE for 16 Levels = %.6f\n', mse(2));
+fprintf('MSE for 32 Levels = %.6f\n', mse(3));
+
+%% Quantization Error Plots
+figure;
+
+for i = 1:length(L)
+
+    subplot(3,1,i);
+    plot(t, e{i}, 'LineWidth', 1.2);
+    title(['Quantization Error - ' num2str(L(i)) ' Levels']);
+    xlabel('Time (s)');
+    ylabel('Error');
+    grid on;
+
+end
+
+sgtitle('Quantization Error for Different Levels');
