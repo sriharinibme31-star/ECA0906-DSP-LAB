@@ -1,0 +1,106 @@
+clc;
+clear;
+close all;
+
+%% --- Input Parameters ---
+fp = 1000;          % Passband cutoff frequency (Hz)
+Fs = 4000;          % Sampling frequency (Hz)
+N  = 50;            % FIR filter order
+
+% Normalized cutoff frequency
+wc = fp / (Fs/2);
+
+%% --- 1. FIR Low-Pass Filter using Rectangular Window ---
+b_rect = fir1(N, wc, 'low', rectwin(N+1));
+
+disp('--- Rectangular Window Coefficients ---');
+disp(b_rect');
+
+
+%% --- 2. FIR Low-Pass Filter using Hamming Window ---
+b_hamm = fir1(N, wc, 'low', hamming(N+1));
+
+disp('--- Hamming Window Coefficients ---');
+disp(b_hamm');
+
+
+%% --- 3. FIR Low-Pass Filter using Hanning Window ---
+b_hann = fir1(N, wc, 'low', hanning(N+1));
+
+disp('--- Hanning Window Coefficients ---');
+disp(b_hann');
+
+
+%% --- Frequency Response ---
+figure;
+
+freqz(b_rect, 1, 2048, Fs);
+title('FIR Low-Pass Filter - Rectangular Window');
+grid on;
+
+
+figure;
+
+freqz(b_hamm, 1, 2048, Fs);
+title('FIR Low-Pass Filter - Hamming Window');
+grid on;
+
+
+figure;
+
+freqz(b_hann, 1, 2048, Fs);
+title('FIR Low-Pass Filter - Hanning Window');
+grid on;
+
+
+%% --- Comparison of Magnitude Responses ---
+[H_rect, f] = freqz(b_rect, 1, 2048, Fs);
+[H_hamm, ~] = freqz(b_hamm, 1, 2048, Fs);
+[H_hann, ~] = freqz(b_hann, 1, 2048, Fs);
+
+figure;
+
+plot(f, 20*log10(abs(H_rect) + eps), 'LineWidth', 1.5);
+hold on;
+plot(f, 20*log10(abs(H_hamm) + eps), 'LineWidth', 1.5);
+plot(f, 20*log10(abs(H_hann) + eps), 'LineWidth', 1.5);
+
+grid on;
+xlabel('Frequency (Hz)');
+ylabel('Magnitude (dB)');
+title('Comparison of FIR Low-Pass Filters');
+legend('Rectangular', 'Hamming', 'Hanning');
+xlim([0 Fs/2]);
+
+
+%% --- Impulse Responses ---
+figure;
+
+subplot(3,1,1);
+stem(0:N, b_rect, 'filled');
+title('Impulse Response - Rectangular Window');
+xlabel('Samples');
+ylabel('Amplitude');
+grid on;
+
+subplot(3,1,2);
+stem(0:N, b_hamm, 'filled');
+title('Impulse Response - Hamming Window');
+xlabel('Samples');
+ylabel('Amplitude');
+grid on;
+
+subplot(3,1,3);
+stem(0:N, b_hann, 'filled');
+title('Impulse Response - Hanning Window');
+xlabel('Samples');
+ylabel('Amplitude');
+grid on;
+
+
+%% --- Display Filter Order ---
+fprintf('\nFIR Filter Order = %d\n', N);
+fprintf('Number of Coefficients = %d\n', N+1);
+fprintf('Sampling Frequency = %d Hz\n', Fs);
+fprintf('Cutoff Frequency = %d Hz\n', fp);
+fprintf('Normalized Cutoff Frequency = %.2f\n', wc);
