@@ -1,0 +1,108 @@
+clc;
+clear;
+close all;
+
+% EX NO: 2.2
+% Comparison of Butterworth and Chebyshev Type-I Band-Pass Filters
+
+% Specifications
+Fs = 2000;
+Rp = 1;
+Rs = 40;
+
+Wp = [300 600]/(Fs/2);
+Ws = [200 700]/(Fs/2);
+
+% ------------------------------------------------
+% Butterworth Band-Pass Filter
+% ------------------------------------------------
+[n1,W1] = buttord(Wp,Ws,Rp,Rs);
+[b1,a1] = butter(n1,W1,'bandpass');
+
+% ------------------------------------------------
+% Chebyshev Type-I Band-Pass Filter
+% ------------------------------------------------
+[n2,W2] = cheb1ord(Wp,Ws,Rp,Rs);
+[b2,a2] = cheby1(n2,Rp,W2,'bandpass');
+
+% ------------------------------------------------
+% Magnitude and Phase Response
+% ------------------------------------------------
+
+figure;
+freqz(b1,a1);
+title('Butterworth Band-Pass Filter');
+
+figure;
+freqz(b2,a2);
+title('Chebyshev Type-I Band-Pass Filter');
+
+% ------------------------------------------------
+% Group Delay Comparison
+% ------------------------------------------------
+
+figure;
+grpdelay(b1,a1);
+hold on;
+grpdelay(b2,a2);
+legend('Butterworth','Chebyshev-I');
+title('Group Delay Comparison');
+grid on;
+hold off;
+
+% ------------------------------------------------
+% Pole-Zero Plots
+% ------------------------------------------------
+
+figure;
+
+subplot(1,2,1);
+zplane(b1,a1);
+title('Butterworth Pole-Zero Plot');
+
+subplot(1,2,2);
+zplane(b2,a2);
+title('Chebyshev-I Pole-Zero Plot');
+
+% ------------------------------------------------
+% Impulse Responses
+% ------------------------------------------------
+
+figure;
+
+subplot(2,1,1);
+impz(b1,a1);
+title('Butterworth Impulse Response');
+grid on;
+
+subplot(2,1,2);
+impz(b2,a2);
+title('Chebyshev-I Impulse Response');
+grid on;
+
+% ------------------------------------------------
+% Pole Magnitude Comparison
+% ------------------------------------------------
+
+figure;
+
+subplot(1,2,1);
+stem(abs(roots(a1)),'filled');
+title('Butterworth Pole Magnitude');
+xlabel('Pole Number');
+ylabel('Magnitude');
+grid on;
+
+subplot(1,2,2);
+stem(abs(roots(a2)),'filled');
+title('Chebyshev-I Pole Magnitude');
+xlabel('Pole Number');
+ylabel('Magnitude');
+grid on;
+
+% ------------------------------------------------
+% Display Filter Orders
+% ------------------------------------------------
+
+fprintf('Butterworth Order = %d\n',n1);
+fprintf('Chebyshev Type-I Order = %d\n',n2);
