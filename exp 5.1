@@ -1,0 +1,106 @@
+clc;
+clear;
+close all;
+
+%% --- Input Parameters ---
+fp = 1000;          % High-pass cutoff frequency (Hz)
+Fs = 8000;          % Sampling frequency (Hz)
+N  = 50;            % Filter order
+
+% Normalized cutoff frequency
+wc = fp / (Fs/2);
+
+%% --- 1. FIR High-Pass using Rectangular Window ---
+b_rect = fir1(N, wc, 'high', rectwin(N+1));
+
+disp('--- High-Pass Coefficients (Rectangular Window) ---');
+disp(b_rect');
+
+
+%% --- 2. FIR High-Pass using Hamming Window ---
+b_hamm = fir1(N, wc, 'high', hamming(N+1));
+
+disp('--- High-Pass Coefficients (Hamming Window) ---');
+disp(b_hamm');
+
+
+%% --- 3. FIR High-Pass using Hanning Window ---
+b_hann = fir1(N, wc, 'high', hanning(N+1));
+
+disp('--- High-Pass Coefficients (Hanning Window) ---');
+disp(b_hann');
+
+
+%% --- Frequency Response: Rectangular Window ---
+figure;
+freqz(b_rect, 1, 2048, Fs);
+title('High-Pass FIR using Rectangular Window');
+grid on;
+
+
+%% --- Frequency Response: Hamming Window ---
+figure;
+freqz(b_hamm, 1, 2048, Fs);
+title('High-Pass FIR using Hamming Window');
+grid on;
+
+
+%% --- Frequency Response: Hanning Window ---
+figure;
+freqz(b_hann, 1, 2048, Fs);
+title('High-Pass FIR using Hanning Window');
+grid on;
+
+
+%% --- Comparison of Magnitude Responses ---
+[H_rect, f] = freqz(b_rect, 1, 2048, Fs);
+[H_hamm, ~] = freqz(b_hamm, 1, 2048, Fs);
+[H_hann, ~] = freqz(b_hann, 1, 2048, Fs);
+
+figure;
+
+plot(f, 20*log10(abs(H_rect) + eps), 'LineWidth', 1.5);
+hold on;
+plot(f, 20*log10(abs(H_hamm) + eps), 'LineWidth', 1.5);
+plot(f, 20*log10(abs(H_hann) + eps), 'LineWidth', 1.5);
+
+grid on;
+xlabel('Frequency (Hz)');
+ylabel('Magnitude (dB)');
+title('High-Pass FIR Filter Comparison');
+legend('Rectangular', 'Hamming', 'Hanning');
+xlim([0 Fs/2]);
+
+
+%% --- Impulse Responses ---
+figure;
+
+subplot(3,1,1);
+stem(0:N, b_rect, 'filled');
+grid on;
+xlabel('Sample');
+ylabel('Amplitude');
+title('Impulse Response - Rectangular Window');
+
+subplot(3,1,2);
+stem(0:N, b_hamm, 'filled');
+grid on;
+xlabel('Sample');
+ylabel('Amplitude');
+title('Impulse Response - Hamming Window');
+
+subplot(3,1,3);
+stem(0:N, b_hann, 'filled');
+grid on;
+xlabel('Sample');
+ylabel('Amplitude');
+title('Impulse Response - Hanning Window');
+
+
+%% --- Display Specifications ---
+fprintf('\n--- Filter Specifications ---\n');
+fprintf('Sampling Frequency     = %d Hz\n', Fs);
+fprintf('Cutoff Frequency       = %d Hz\n', fp);
+fprintf('Filter Order           = %d\n', N);
+fprintf('Number of Coefficients = %d\n', N+1);
+fprintf('Normalized Cutoff      = %.2f\n', wc);
