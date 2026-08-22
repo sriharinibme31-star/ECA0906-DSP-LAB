@@ -1,0 +1,69 @@
+clc;
+clear;
+close all;
+
+% Sampling frequency
+fs = 1000;
+
+% Time vector
+t = (0:999) / fs;
+
+% Original signal: 100 Hz + 200 Hz components
+s = sin(2*pi*100*t) + 0.5*sin(2*pi*200*t);
+
+% Generate Gaussian noise
+n = 0.3 * randn(size(t));
+
+% Noisy signal
+x = s + n;
+
+%% Figure 1: Signal with Noise
+figure;
+plot(t, x, 'b', 'LineWidth', 1);
+grid on;
+
+title('Signal with Noise');
+xlabel('Time (seconds)');
+ylabel('Amplitude');
+
+%% Figure 2: PSD using Periodogram
+figure;
+periodogram(x, [], [], fs);
+grid on;
+
+title('PSD using Periodogram');
+
+%% Figure 3: Magnitude Spectrum using FFT
+N = length(x);
+
+X = fft(x);
+X_mag = abs(X) / N;
+
+% Frequency vector
+f = (0:N-1) * fs / N;
+
+figure;
+plot(f(1:N/2), X_mag(1:N/2), 'LineWidth', 1.2);
+grid on;
+
+title('Magnitude Spectrum');
+xlabel('Frequency (Hz)');
+ylabel('Magnitude');
+
+%% Figure 4: Power Comparison
+signal_power = mean(s.^2);
+noise_power = var(n);
+
+figure;
+bar([signal_power noise_power]);
+
+set(gca, 'XTick', 1:2);
+set(gca, 'XTickLabel', {'Signal', 'Noise'});
+
+grid on;
+title('Power Comparison');
+ylabel('Power');
+
+%% Display Power Values
+fprintf('Signal Power = %.4f\n', signal_power);
+fprintf('Noise Power  = %.4f\n', noise_power);
