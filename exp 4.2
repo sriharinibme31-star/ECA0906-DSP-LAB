@@ -1,0 +1,40 @@
+clc;
+clear;
+close all;
+
+%% --- Input Parameters ---
+fp = 1000;          % Passband cutoff frequency (Hz)
+Fs = 4000;          % Sampling frequency (Hz)
+N  = 50;            % Filter order
+
+% Normalized cutoff frequency
+wc = fp / (Fs/2);
+
+%% --- FIR Low-Pass Filter using Hamming Window ---
+b_hamm = fir1(N, wc, 'low', hamming(N+1));
+
+%% --- Display Filter Coefficients ---
+disp('--- Hamming Window FIR Filter Coefficients ---');
+disp(b_hamm');
+
+%% --- Plot Frequency Response ---
+figure;
+freqz(b_hamm, 1, 2048, Fs);
+title('Low-Pass FIR Filter using Hamming Window');
+grid on;
+
+%% --- Plot Impulse Response ---
+figure;
+stem(0:N, b_hamm, 'filled');
+grid on;
+xlabel('Sample');
+ylabel('Amplitude');
+title('Impulse Response of Hamming Window FIR Filter');
+
+%% --- Display Specifications ---
+fprintf('\n--- Filter Specifications ---\n');
+fprintf('Sampling Frequency = %d Hz\n', Fs);
+fprintf('Cutoff Frequency   = %d Hz\n', fp);
+fprintf('Filter Order       = %d\n', N);
+fprintf('Number of Coefficients = %d\n', N+1);
+fprintf('Normalized Cutoff  = %.2f\n', wc);
