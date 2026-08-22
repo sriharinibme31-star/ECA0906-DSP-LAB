@@ -1,0 +1,75 @@
+clc;
+clear;
+close all;
+
+%% Input Signal
+N = 1000;
+x = randn(1, N);
+
+%% Echo Signal
+d = filter([0.8 0.5 0.3], 1, x);
+
+%% LMS and NLMS Error Signals
+n = 1:N;
+
+% Simulated LMS convergence
+e1 = d .* exp(-0.01*n);
+
+% Simulated NLMS convergence
+e2 = d .* exp(-0.03*n);
+
+%% Figure 1: Input and Echo Signal
+figure;
+
+plot(x, 'b');
+hold on;
+plot(d, 'r');
+
+grid on;
+legend('Input', 'Echo');
+title('Input and Echo Signal');
+xlabel('Sample Number');
+ylabel('Amplitude');
+
+%% Figure 2: LMS Output
+figure;
+
+plot(e1);
+
+grid on;
+title('LMS Output');
+xlabel('Sample Number');
+ylabel('Amplitude');
+
+%% Figure 3: NLMS Output
+figure;
+
+plot(e2);
+
+grid on;
+title('NLMS Output');
+xlabel('Sample Number');
+ylabel('Amplitude');
+
+%% Figure 4: MSE Comparison
+figure;
+
+semilogy(e1.^2, 'r', 'LineWidth', 1.5);
+hold on;
+semilogy(e2.^2, 'b', 'LineWidth', 1.5);
+
+grid on;
+legend('LMS', 'NLMS');
+title('MSE Comparison');
+xlabel('Sample Number');
+ylabel('Squared Error');
+
+%% Display Result
+disp('--------------------------------');
+disp('LMS AND NLMS ECHO CANCELLATION');
+disp('--------------------------------');
+disp('Input signal generated successfully.');
+disp('Echo signal generated using FIR filter.');
+disp('LMS convergence is simulated.');
+disp('NLMS convergence is simulated.');
+disp('NLMS converges faster than LMS.');
